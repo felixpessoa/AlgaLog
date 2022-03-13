@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.algaworks.algalog.api.domain.exception.NegocioException;
+import com.algaworks.algalog.domain.exception.EntidadeNaoEncontradaException;
+import com.algaworks.algalog.domain.exception.NegocioException;
 
 import lombok.AllArgsConstructor;
 
@@ -46,6 +47,19 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 		problema.setCampos(campos);
 		return handleExceptionInternal(ex, problema, headers, status, request);
 	}
+	
+	@ExceptionHandler(EntidadeNaoEncontradaException.class)
+	public ResponseEntity<Object> EntidadeNaoEncontrada(EntidadeNaoEncontradaException ex, WebRequest request){
+		HttpStatus status = HttpStatus.NOT_FOUND;
+		
+		Problema problema = new Problema();
+		problema.setStatus(status.value());
+		problema.setDataHora(LocalDateTime.now());
+		problema.setTitulo(ex.getMessage());
+		
+		return handleExceptionInternal(ex, problema, new HttpHeaders(), status, request);
+	}
+	
 	
 	@ExceptionHandler(NegocioException.class)
 	public ResponseEntity<Object> handleNegocio(NegocioException ex, WebRequest request){
